@@ -25,11 +25,11 @@ exports.author_detail = function(req, res, next) {
     async.parallel({
         author: function(callback){
             Author.findById(req.params.id)
-                .exec(callback)
+                .exec(callback);
         },
         author_books: function(callback){
             Book.find({ 'author': req.params.id }, 'title summary')
-                .exec(callback)
+                .exec(callback);
         },
     }, function(err, results) {
         if (err){ return next(err); } // Error in API usage.
@@ -95,7 +95,7 @@ exports.author_create_post = [
             });
         }
     }
-]
+];
 
 // Display Author delete form on GET.
 exports.author_delete_get = function(req, res) {
