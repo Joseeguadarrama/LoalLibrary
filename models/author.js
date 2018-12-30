@@ -21,10 +21,12 @@ AuthorSchema
 
 // Virtual for author's lifespan
 AuthorSchema
-.virtual('lifespan')
-.get(function () {
-  return (this.date_of_death.getYear() - this.date_of_birth.getYear()).toString();
-});
+  .virtual('lifespan')
+  .get(function () {
+    var dob = this.date_of_birth ? moment(this.date_of_birth).format('MMMM Do, YYYY') : '';
+    var dod = this.date_of_death ? ' - ' + moment(this.date_of_death).format('MMMM Do, YYYY') : '';
+    return ( dob + dod ).toString();
+  });
 
 AuthorSchema
 .virtual('dob')
