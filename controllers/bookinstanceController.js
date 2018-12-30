@@ -12,7 +12,7 @@ exports.bookinstance_list = function(req, res, next) {
         .exec(function (err, list_bookinstances){
             if (err) { return next(err); }
             //Successful
-            res.render('bookinstance_list', { title: 'Book Instance List', bookinstance_list: list_bookinstances})
+            res.render('bookinstance_list', { title: 'Book Instance List', bookinstance_list: list_bookinstances});
         });
 };
 
@@ -24,13 +24,13 @@ exports.bookinstance_detail = function(req, res, next) {
     .exec(function (err, bookinstance) {
       if (err) { return next(err); }
       if (bookinstance==null) { // No results.
-          var err = new Error('Book copy not found');
-          err.status = 404;
-          return next(err);
+          var error = new Error('Book copy not found');
+          error.status = 404;
+          return next(error);
         }
       // Successful, so render.
       res.render('bookinstance_detail', { title: 'Book:', bookinstance:  bookinstance});
-    })
+    });
 
 };
 

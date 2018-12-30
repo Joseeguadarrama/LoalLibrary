@@ -34,9 +34,9 @@ exports.author_detail = function(req, res, next) {
     }, function(err, results) {
         if (err){ return next(err); } // Error in API usage.
         if (results.author==null) {
-            var err = new Error('Author not found');
-            err.status = 404;
-            return next(err);
+            var error = new Error('Author not found');
+            error.status = 404;
+            return next(error);
         }
         //Succesful, so render.
         res.render('author_detail', { title: 'Author Detail', author: results.author, author_books: results.author_books } );
