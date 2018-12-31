@@ -131,13 +131,13 @@ exports.author_delete_post = function(req, res, next) {
     }, function(err, results){
         if(err){ return next(err); }
         // Success
-        if(results.author_books.lengt > 0){
-           //Author has books. Render in same way as get
+        if(results.author_books.length > 0){
+           //Author has books. Render in same way as for GET route.
            res.render('author_delete', { title: 'Delete Author', author: results.author, author_books: results.author_books } );
            return;
         }
         else {
-             // Author has book. Delete object and redirect tot eh list of authors.
+             // Author has no book. Delete object and redirect tot eh list of authors.
              Author.findByIdAndRemove(req.body.authorid, function deleteAuthor(err){
                  if(err){ return next(err); }
                  //Success - go to author list
