@@ -15,7 +15,7 @@ var app = express();
 var mongoose = require('mongoose');
 var mongoDB = 'mongodb://codeslurpii:BrainFreeze1!@ds225253.mlab.com:25253/local_library';
 
-mongoose.connect(mongoDB);
+mongoose.connect(mongoDB,{ useNewUrlParser: true });
 mongoose.Promise = global.Promise;
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
