@@ -4,10 +4,23 @@ block content
 
     h1 #{title}: #{book.title}
 
-    p Do you really wantt to delete this Book copy?
+    if book_instances.length
+        p #[strong Delete the following book copies before attempting to the delete this book. ]
 
-        form(method='POST' action='')
-            div.form-group
-                input#authorid.form-control(type='hidden', name='bookid', required='true', value=book._id )
-            
-            button.btn.btn-primary(type='submit') Delete
+        div(style='margin-left:20px;margin:20px')
+
+            H4 Book Copies
+
+            dl
+            each book in book_instances
+                dt
+                    a(href=book.url) #{book.id}
+    else
+
+        p Do you really wantt to delete this Book copy?
+
+            form(method='POST' action='')
+                div.form-group
+                    input#authorid.form-control(type='hidden', name='bookid', required='true', value=book._id )
+                
+                button.btn.btn-primary(type='submit') Delete
