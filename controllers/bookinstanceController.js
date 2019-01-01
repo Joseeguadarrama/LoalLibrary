@@ -1,5 +1,6 @@
 var BookInstance = require('../models/bookinstance');
 var Book = require('../models/book');
+var async = require('async');
 
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -97,17 +98,17 @@ exports.bookinstance_create_post = [
 exports.bookinstance_delete_get = function(req, res, next) {
     
     BookInstance.findById(req.params.id)
-    .populate('book')
-    .exec( function (err, bookinstance) { 
-        if (err) { return next(err); }
-        if(bookinstance == null){
-            var error = new Error('Book copy not found');
-            error.status = 404;
-            return next(error);
-        }
-        // Successful, so render
-        res.render('bookinstance_delete', {title: 'Delete Book copy', bookinstance:  bookinstance });
-     });
+        .populate('book')
+        .exec( function (err, bookinstance) { 
+            if (err) { return next(err); }
+            if(bookinstance == null){
+                var error = new Error('Book copy not found');
+                error.status = 404;
+                return next(error);
+            }
+            // Successful, so render
+            res.render('bookinstance_delete', {title: 'Delete Book copy', bookinstance:  bookinstance });
+        });
 };
 
 // Handle BookInstance delete on POST.
@@ -133,8 +134,27 @@ exports.bookinstance_delete_post = function(req, res, next) {
 };
 
 // Display BookInstance update form on GET.
-exports.bookinstance_update_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: BookInstance update GET');
+exports.bookinstance_update_get = function(req, res, next) {
+    
+    async.parallel({
+        bookinstance: function(callback){
+            BookInstance.findById(req.params.id)
+                .populate('book').exec(callback);
+        },
+        books: function(callback){
+            Book.find(callback);
+        }
+        }, function(err, results) {
+            if (err) { return next(err); }
+            if (results.bookinstance==null) { // No results.
+                var error = new Error('Book copy not found');
+                error.status = 404;
+                return next(error);
+            }
+            // Success.
+            res.render('bookinstance_form', { title: 'Update  BookInstance', book_list : results.books, selected_book : results.bookinstance.book._id, bookinstance:results.bookinstance });
+        }
+    );
 };
 
 // Handle bookinstance update on POST.
