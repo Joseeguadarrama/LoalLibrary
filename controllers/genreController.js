@@ -155,15 +155,15 @@ exports.genre_delete_post = function(req, res) {
 exports.genre_update_get = function(req, res, next) {
     
     Genre.findById(req.params.id)
-        .exec(function (err, results) {
+        .exec(function (err, genre) {
             if (err) { return next(err); }
-            if (results == null) { 
+            if (genre == null) { 
                 // No results.
                 var error = new Error('Genre not found');
                 error.status = 404;
                 return next(error);
             }
-            res.render('genre_form', { title: 'Update Genre', genre: results });
+            res.render('genre_form', { title: 'Update Genre', genre: genre });
         });
 };
 
@@ -194,40 +194,30 @@ exports.genre_update_post = [
                 errors: errors.array()
             });
             return;
-        } 
-        else {
-            // Data from form is valid. Update the record.
-            Genre.findByIdAndUpdate(req.params.id, genre, {}, function (err,thegenre) {
-                if (err) { return next(err); }
-                   // Successful - redirect to genre detail page.
-                   res.redirect(thegenre.url);
+        }         else {
+            //Data from form is valid.
+            //Check if Genre with name already exists.
+            Genre.findOne({
+                    'name': req.body.name
+                })
+                .exec(function (err, found_genre) {
+                    if (err) { return next(err); }
+                    if (found_genre) {
+                        // Genre exists, return an alert and reRender.
+                        res.render('genre_form', {
+                            title: 'Create Genre',
+                            genre: genre,
+                            errors: errors.array()
+                        });
+                        return;
+                    } else {
+                        Genre.findByIdAndUpdate(req.params.id, genre, {}, function (err, thegenre) {
+                            if (err) { return next(err); }
+                            //Genre updated. Redirect to genre detail page.
+                            res.redirect(thegenre.url);
+                        });
+                    }
                 });
         }
-        // else {
-        //     //Data from form is valid.
-        //     //Check if Genre with name already exists.
-        //     Genre.findOne({
-        //             'name': req.body.name
-        //         })
-        //         .exec(function (err, found_genre) {
-        //             if (err) { return next(err); }
-        //             if (found_genre) {
-        //                 // Genre exists, return an alert and reRender.
-        //                 res.render('genre_form', {
-        //                     title: 'Create Genre',
-        //                     genre: genre,
-        //                     errors: errors.array()
-        //                 });
-        //                 return;
-        //             } else {
-        //                 Genre.findByIdAndUpdate(req.params.id, genre, {}, function (err, thegenre) {
-        //                     if (err) { return next(err); }
-        //                     //Genre updated. Redirect to genre detail page.
-        //                     res.redirect(thegenre.url);
-        //                 });
-        //             }
-        //         });
-        // }
     }
-
-]
+];
